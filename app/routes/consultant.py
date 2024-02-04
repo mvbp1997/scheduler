@@ -14,6 +14,7 @@ consultant_bp = Blueprint("consultant", __name__)
 
 @consultant_bp.route("/consultant", methods=["GET"])
 def get_all_consultants():
+    # TODO: add filtering
     return Response(
         response=json.dumps(consultant_db.read_all()),
         status=200,
@@ -24,7 +25,7 @@ def get_all_consultants():
 @consultant_bp.route("/consultant/<id>", methods=["GET"])
 def get_consultant(id):
     return Response(
-        response=json.dumps(consultant_db.read({"id": id})),
+        response=json.dumps(consultant_db.read(id)),
         status=200,
         mimetype="application/json",
     )
@@ -35,7 +36,7 @@ def add_consultant():
     data = request.json
     if data is None or data == {}:
         return Response(
-            response=json.dumps({"Error": "Please provide person information"}),
+            response=json.dumps({"Error": "Please provide consultant information"}),
             status=400,
             mimetype="application/json",
         )
@@ -46,41 +47,25 @@ def add_consultant():
     )
 
 
-@consultant_bp.route("/consultant", methods=["PUT"])
+@consultant_bp.route("/consultant/<id>", methods=["PUT"])
 def update_consultant():
     data = request.json
-    if (
-        data is None
-        or data == {}
-        or "Filter" not in data
-        or "DataToBeUpdated" not in data
-    ):
+    if data is None or data == {}:
         return Response(
-            response=json.dumps(
-                {"Error": "Please provide Filter and DataToBeUpdated information"}
-            ),
+            response=json.dumps({"Error": "Please provide update body"}),
             status=400,
             mimetype="application/json",
         )
 
-    response = consultant_db.update(data)
+    response = consultant_db.update(id, data)
     return Response(
         response=json.dumps(response), status=200, mimetype="application/json"
     )
 
 
-@consultant_bp.route("/consultant", methods=["DELETE"])
+@consultant_bp.route("/consultant/<id>", methods=["DELETE"])
 def delete_consultant():
-    data = request.json
-
-    if data is None or data == {} or "name" not in data:
-        return Response(
-            response=json.dumps({"Error": "Please provide person information"}),
-            status=400,
-            mimetype="application/json",
-        )
-
-    response = consultant_db.delete({"Document": data})
+    response = consultant_db.delete(id)
     return Response(
         response=json.dumps(response), status=200, mimetype="application/json"
     )
