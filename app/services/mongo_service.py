@@ -1,5 +1,6 @@
 from pymongo import MongoClient
 from flask import json
+from nanoid import generate
 
 
 class MongoService:
@@ -27,9 +28,11 @@ class MongoService:
 
     # write one document to collection
     def write(self, data):
-        new_document = data["Document"]
+        new_document = data
+        new_document["id"] = generate()
+
         response = self.collection.insert_one(new_document)
-        return {"Status": "Success", "Document_ID": str(response.inserted_id)}
+        return {"Status": "Success", "id": new_document["id"]}
 
     # update one document in collection
     def update(self, id: str, data):
@@ -63,15 +66,15 @@ class MongoService:
         }
 
 
-if __name__ == "__main__":
-    mongo_obj = MongoService(
-        {
-            "database": "TestDb",
-            "collection": "people",
-        }
-    )
-    # print(json.dumps(mongo_obj.write({"Document": {"id": "abcd"}}), indent=4))
-    # print(json.dumps(mongo_obj.write({"Document": {"id": "1234"}}), indent=4))
+# if __name__ == "__main__":
+#     mongo_obj = MongoService(
+#         {
+#             "database": "TestDb",
+#             "collection": "people",
+#         }
+#     )
+#     # print(json.dumps(mongo_obj.write({"Document": {"id": "abcd"}}), indent=4))
+#     # print(json.dumps(mongo_obj.write({"Document": {"id": "1234"}}), indent=4))
 
-    print(json.dumps(mongo_obj.update("abcd", {"name": "Mark"}), indent=4))
-    print(json.dumps(mongo_obj.read("abcd"), indent=4))
+#     print(json.dumps(mongo_obj.update("abcd", {"name": "Mark"}), indent=4))
+#     print(json.dumps(mongo_obj.read("abcd"), indent=4))
