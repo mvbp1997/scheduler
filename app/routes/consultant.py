@@ -24,8 +24,16 @@ def get_all_consultants():
 
 @consultant_bp.route("/consultant/<id>", methods=["GET"])
 def get_consultant(id):
+    consultant = consultant_db.read(id)
+
+    if consultant is None:
+        return Response(
+            status=404,
+            mimetype="application/json",
+        )
+
     return Response(
-        response=json.dumps(consultant_db.read(id)),
+        response=json.dumps(consultant),
         status=200,
         mimetype="application/json",
     )
@@ -58,7 +66,7 @@ def update_consultant(id):
             mimetype="application/json",
         )
 
-    response = consultant_db.update(id, data)
+    response = consultant_db.update({"id": id}, data)
     return Response(
         response=json.dumps(response), status=200, mimetype="application/json"
     )
@@ -66,7 +74,7 @@ def update_consultant(id):
 
 @consultant_bp.route("/consultant/<id>", methods=["DELETE"])
 def delete_consultant(id):
-    response = consultant_db.delete(id)
+    response = consultant_db.delete({"id": id})
     return Response(
         response=json.dumps(response), status=200, mimetype="application/json"
     )
