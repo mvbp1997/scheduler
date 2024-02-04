@@ -64,17 +64,3 @@ class MongoService:
                 else "Document not found."
             )
         }
-
-
-# if __name__ == "__main__":
-#     mongo_obj = MongoService(
-#         {
-#             "database": "TestDb",
-#             "collection": "people",
-#         }
-#     )
-#     # print(json.dumps(mongo_obj.write({"Document": {"id": "abcd"}}), indent=4))
-#     # print(json.dumps(mongo_obj.write({"Document": {"id": "1234"}}), indent=4))
-
-#     print(json.dumps(mongo_obj.update("abcd", {"name": "Mark"}), indent=4))
-#     print(json.dumps(mongo_obj.read("abcd"), indent=4))
