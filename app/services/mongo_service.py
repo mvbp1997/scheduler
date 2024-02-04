@@ -21,9 +21,13 @@ class MongoService:
         ]
 
     # read and return a single document in collection
-    def read(self, id: str):
-        filter = {"id": id}
-        document = self.collection.find_one(filter)
+    def read(self, id: str, filter={}):
+        query = {**filter, "id": id}
+
+        document = self.collection.find_one(query)
+        if document is None:
+            return None
+
         return {item: document[item] for item in document if item != "_id"}
 
     # write one document to collection
@@ -35,11 +39,10 @@ class MongoService:
         return {"Status": "Success", "id": new_document["id"]}
 
     # update one document in collection
-    def update(self, id: str, data):
+    def update(self, filter, data):
         if id is None or id == "" or data == {}:
             raise Exception("Must provide ID and data (to be updated)")
 
-        filter = {"id": id}
         updated_data = {"$set": data}
         response = self.collection.update_one(filter, updated_data)
         return {
@@ -51,11 +54,10 @@ class MongoService:
         }
 
     # delete one document in collection
-    def delete(self, id: str):
+    def delete(self, filter):
         if id is None or id == "":
             raise Exception("Must provide ID and data (to be updated)")
 
-        filter = {"id": id}
         response = self.collection.delete_one(filter)
         return {
             "Status": (
