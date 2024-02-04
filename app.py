@@ -1,5 +1,6 @@
 from flask import Flask, Response, json, request
 from app.routes.consultant import consultant_bp
+from app.routes.free_time import free_time_bp
 
 app = Flask(__name__)
 
@@ -14,6 +15,7 @@ def root():
 
 
 app.register_blueprint(consultant_bp)
+app.register_blueprint(free_time_bp)
 
 
 if __name__ == "__main__":
