@@ -20,7 +20,7 @@ class MongoService:
         ]
 
     # read and return a single document in collection
-    def read(self, id):
+    def read(self, id: str):
         filter = {"id": id}
         document = self.collection.find_one(filter)
         return {item: document[item] for item in document if item != "_id"}
@@ -32,7 +32,7 @@ class MongoService:
         return {"Status": "Success", "Document_ID": str(response.inserted_id)}
 
     # update one document in collection
-    def update(self, id, data):
+    def update(self, id: str, data):
         if id is None or id == "" or data == {}:
             raise Exception("Must provide ID and data (to be updated)")
 
@@ -48,7 +48,7 @@ class MongoService:
         }
 
     # delete one document in collection
-    def delete(self, id):
+    def delete(self, id: str):
         if id is None or id == "":
             raise Exception("Must provide ID and data (to be updated)")
 
