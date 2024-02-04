@@ -41,14 +41,15 @@ def add_consultant():
             mimetype="application/json",
         )
 
-    response = consultant_db.write({"Document": data})
+    response = consultant_db.write(data)
+
     return Response(
         response=json.dumps(response), status=200, mimetype="application/json"
     )
 
 
 @consultant_bp.route("/consultant/<id>", methods=["PUT"])
-def update_consultant():
+def update_consultant(id):
     data = request.json
     if data is None or data == {}:
         return Response(
@@ -64,7 +65,7 @@ def update_consultant():
 
 
 @consultant_bp.route("/consultant/<id>", methods=["DELETE"])
-def delete_consultant():
+def delete_consultant(id):
     response = consultant_db.delete(id)
     return Response(
         response=json.dumps(response), status=200, mimetype="application/json"
