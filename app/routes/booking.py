@@ -119,16 +119,48 @@ def delete_booking(consultant_id, id):
 
 
 @booking_bp.route("/consultant/<consultant_id>/booking/availability", methods=["GET"])
-def get_availability_for_date(consultant_id):
+def get_availability_for_consultant(consultant_id):
     data = request.json
-    if data is None or data == {} or "date" not in data:
+    if data is None or data == {} or "date" not in data and "month" not in data:
         return Response(
             response=json.dumps({"Error": "Please provide date information"}),
             status=400,
             mimetype="application/json",
         )
 
-    response = booking_service.get_free_time_for_consultant(consultant_id, data["date"])
+    if "month" in data:
+        response = booking_service.get_free_time_for_month(
+            data["month"], {"consultant_id": consultant_id}
+        )
+        return Response(
+            response=json.dumps(response), status=200, mimetype="application/json"
+        )
+
+    response = booking_service.get_free_time(
+        data["date"], {"consultant_id": consultant_id}
+    )
+    return Response(
+        response=json.dumps(response), status=200, mimetype="application/json"
+    )
+
+
+@booking_bp.route("/booking/availability", methods=["GET"])
+def get_all_availability():
+    data = request.json
+    if data is None or data == {} or "date" not in data and "month" not in data:
+        return Response(
+            response=json.dumps({"Error": "Please provide date or month information"}),
+            status=400,
+            mimetype="application/json",
+        )
+
+    if "month" in data:
+        response = booking_service.get_free_time_for_month(data["month"])
+        return Response(
+            response=json.dumps(response), status=200, mimetype="application/json"
+        )
+
+    response = booking_service.get_free_time(data["date"])
     return Response(
         response=json.dumps(response), status=200, mimetype="application/json"
     )

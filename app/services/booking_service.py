@@ -25,20 +25,32 @@ class BookingService:
         id = generate()
         return self.booking_db.write({**booking_request, "id": id})
 
-    def get_free_time_for_consultant(self, consultant_id, date):
+    def get_free_time_for_month(self, month, filter={}):
         # get consultant free time
-        filter = {"consultant_id": consultant_id, "date": date}
-        free_time = self.extract_time_attributes(self.ft_db.read_all(filter))
+        filter = {**filter, "date": {"$regex": f"^{month}/"}}
+        print(filter)
+        free_time = self.ft_db.read_all(filter)
 
         # get consultant bookings
-        current_bookings = self.extract_time_attributes(
-            self.booking_db.read_all(filter)
-        )
+        current_bookings = self.booking_db.read_all(filter)
+
+        available_times = self.find_free_time(free_time, current_bookings)
+        return available_times
+
+    def get_free_time(self, date, filter={}):
+        # get consultant free time
+        filter = {**filter, "date": date}
+        free_time = self.ft_db.read_all(filter)
+
+        # get consultant bookings
+        current_bookings = self.booking_db.read_all(filter)
 
         available_times = self.find_free_time(free_time, current_bookings)
         return available_times
 
     def find_free_time(self, free_intervals, booked_intervals):
+        # print(f"free_interval: {free_intervals}")
+        # print(f"booked_interval: {booked_intervals}")
         result = []
 
         for free_interval in free_intervals:
@@ -58,6 +70,8 @@ class BookingService:
                 if current_time < booked_start:
                     result.append(
                         {
+                            "date": free_interval["date"],
+                            "consultant_id": free_interval["consultant_id"],
                             "start_time": current_time.strftime("%H:%M"),
                             "end_time": booked_start.strftime("%H:%M"),
                         }
@@ -67,6 +81,8 @@ class BookingService:
             if current_time < free_end:
                 result.append(
                     {
+                        "date": free_interval["date"],
+                        "consultant_id": free_interval["consultant_id"],
                         "start_time": current_time.strftime("%H:%M"),
                         "end_time": free_end.strftime("%H:%M"),
                     }
@@ -87,8 +103,24 @@ class BookingService:
 
         return False
 
-    def extract_time_attributes(self, input_array):
-        return [
-            {"start_time": obj["start_time"], "end_time": obj["end_time"]}
-            for obj in input_array
-        ]
+
+# from mongo_service import MongoService
+
+
+# if __name__ == "__main__":
+#     booking = BookingService(
+#         MongoService(
+#             {
+#                 "database": "scheduler",
+#                 "collection": "free-time",
+#             }
+#         ),
+#         MongoService(
+#             {
+#                 "database": "scheduler",
+#                 "collection": "booking",
+#             }
+#         ),
+#     )
+
+#     print(booking.get_free_time_for_month("01"))

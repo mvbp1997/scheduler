@@ -7,8 +7,8 @@ DONE - return all available time slots for all consultants
 DONE - return all time slots for all consultants given a date (filter?)
 DONE - create an API route to enable a customer to reserve a time slot for a single consultant (race condition?)
 
-- modify booking route to include client name and email information
-- add unit tests for booking service
-- create an API route to return all available time slots for all consultants given a specific month
-- create an API route that returns all available time slots for a consultant within a specified time range (i.e filter on start/end time)
+DONE - create an API route to return all available time slots for all consultants given a specific month
+
+- create an API route that returns all available time slots for all consultants within a specified time range (i.e filter on start/end time)
 - create an API route to enable consultants to specify recurring free time slots (recurring based on day of the week)
+- add unit tests for booking service
