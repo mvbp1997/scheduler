@@ -28,6 +28,7 @@ class BookingService:
 
     def get_free_time(self, data={}):
         filter = {}
+        time_range_filter = {}
 
         if "month" in data:
             filter = {**filter, "date": {"$regex": f"^{data['month']}/"}}
@@ -41,17 +42,16 @@ class BookingService:
         if "start_time" and "end_time" in data:
             start_time = data["start_time"]
             end_time = data["end_time"]
-            filter = {
-                **filter,
+            time_range_filter = {
                 "start_time": {"$lte": start_time},
                 "end_time": {"$gte": end_time},
             }
 
-        print(f"Filter: {filter}")
+        print({"filter": filter, "time_range": time_range_filter})
 
         # get consultant free time
         ## TODO: group by consultant_id?
-        free_time = self.ft_db.read_all(filter)
+        free_time = self.ft_db.read_all({**filter, **time_range_filter})
 
         # get consultant bookings
         ## TODO: group by consultant_id
@@ -63,47 +63,60 @@ class BookingService:
     def find_free_time(self, free_intervals, booked_intervals):
         result = []
 
-        grouped_free_intervals = group_by_consultant_id(free_intervals)
-        grouped_booked_intervals = group_by_consultant_id(booked_intervals)
+        grouped_by_consultant_free = group_by_value(free_intervals, "consultant_id")
+        grouped_by_consultant_booked = group_by_value(booked_intervals, "consultant_id")
 
-        for consultant_id, consultant_free_intervals in grouped_free_intervals.items():
+        for (
+            consultant_id,
+            consultant_free_intervals,
+        ) in grouped_by_consultant_free.items():
             print(f"Now evaluating free time for {consultant_id}")
-            consultant_booked_intervals = grouped_booked_intervals[consultant_id]
+            consultant_booked_intervals = grouped_by_consultant_booked[consultant_id]
 
-            for free_interval in consultant_free_intervals:
-                free_start = datetime.strptime(free_interval["start_time"], "%H:%M")
-                free_end = datetime.strptime(free_interval["end_time"], "%H:%M")
+            grouped_by_date_booked = group_by_value(consultant_booked_intervals, "date")
+            grouped_by_date_free = group_by_value(consultant_free_intervals, "date")
 
-                booked_times = [
-                    (
-                        datetime.strptime(b["start_time"], "%H:%M"),
-                        datetime.strptime(b["end_time"], "%H:%M"),
-                    )
-                    for b in consultant_booked_intervals
-                ]
+            for date, date_free_intervals in grouped_by_date_free.items():
+                print(f"Now evaluating free time for {date}")
+                date_booked_intervals = grouped_by_date_booked[date]
 
-                current_time = free_start
-                for booked_start, booked_end in sorted(booked_times):
-                    if current_time < booked_start:
+                for free_interval in date_free_intervals:
+                    free_start = datetime.strptime(free_interval["start_time"], "%H:%M")
+                    free_end = datetime.strptime(free_interval["end_time"], "%H:%M")
+                    free_date = free_interval["date"]
+
+                    booked_times = [
+                        (
+                            datetime.strptime(b["start_time"], "%H:%M"),
+                            datetime.strptime(b["end_time"], "%H:%M"),
+                            b["date"],
+                        )
+                        for b in date_booked_intervals
+                    ]
+
+                    current_time = free_start
+                    for booked_start, booked_end, booked_date in sorted(booked_times):
+                        print({"free_date": free_date, "booked_date": booked_date})
+                        if current_time < booked_start:
+                            result.append(
+                                {
+                                    "date": free_interval["date"],
+                                    "consultant_id": consultant_id,
+                                    "start_time": current_time.strftime("%H:%M"),
+                                    "end_time": booked_start.strftime("%H:%M"),
+                                }
+                            )
+                        current_time = max(current_time, booked_end)
+
+                    if current_time < free_end:
                         result.append(
                             {
                                 "date": free_interval["date"],
                                 "consultant_id": consultant_id,
                                 "start_time": current_time.strftime("%H:%M"),
-                                "end_time": booked_start.strftime("%H:%M"),
+                                "end_time": free_end.strftime("%H:%M"),
                             }
                         )
-                    current_time = max(current_time, booked_end)
-
-                if current_time < free_end:
-                    result.append(
-                        {
-                            "date": free_interval["date"],
-                            "consultant_id": consultant_id,
-                            "start_time": current_time.strftime("%H:%M"),
-                            "end_time": free_end.strftime("%H:%M"),
-                        }
-                    )
 
         return result
 
@@ -121,11 +134,11 @@ class BookingService:
         return False
 
 
-def group_by_consultant_id(objects):
+def group_by_value(objects, value):
     grouped_dict = defaultdict(list)
 
     for obj in objects:
-        obj_id = obj["consultant_id"]
+        obj_id = obj[value]
         grouped_dict[obj_id].append(obj)
 
     return grouped_dict
