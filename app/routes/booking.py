@@ -1,6 +1,6 @@
 from flask import Blueprint, Response, json, request
 from app.services.mongo_service import MongoService
-from app.services.booking_service import BookingService
+from app.services.booking_service.booking_service import BookingService
 
 
 ft_db = MongoService(
@@ -132,7 +132,9 @@ def get_availability_for_consultant(consultant_id):
             mimetype="application/json",
         )
 
-    response = booking_service.get_free_time({**data, "consultant_id": consultant_id})
+    response = booking_service.get_availability(
+        {**data, "consultant_id": consultant_id}
+    )
     return Response(
         response=json.dumps(response), status=200, mimetype="application/json"
     )
@@ -152,7 +154,7 @@ def get_all_availability():
             mimetype="application/json",
         )
 
-    response = booking_service.get_free_time(data)
+    response = booking_service.get_availability(data)
     return Response(
         response=json.dumps(response), status=200, mimetype="application/json"
     )
