@@ -9,6 +9,7 @@ DONE - create an API route to enable a customer to reserve a time slot for a sin
 DONE - create an API route to return all available time slots for all consultants given a specific month
 DONE - refactor "get free time" algorithm to account for dates as well
 DONE - create an API route that returns all available time slots for all consultants within a specified time range (i.e filter on start/end time)
+DONE - create an API route to enable consultants to specify recurring free time slots (recurring based on day of the week)
+DONE - account for overlapping free intervals
 
-- create an API route to enable consultants to specify recurring free time slots (recurring based on day of the week)
 - add unit tests for booking service
