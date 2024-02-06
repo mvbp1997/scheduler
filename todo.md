@@ -13,3 +13,4 @@ DONE - create an API route to enable consultants to specify recurring free time 
 DONE - account for overlapping free intervals
 
 - add unit tests for booking service
+- combine mongo docker image and python app image in docker compose
