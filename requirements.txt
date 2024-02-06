@@ -2,3 +2,4 @@ flask==3.0.1
 pymongo==4.6.1
 black==24.1.1
 nanoid==2.0.0
+python-dateutil==2.8.2
