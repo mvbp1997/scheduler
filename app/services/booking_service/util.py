@@ -144,7 +144,10 @@ def get_free_time_intervals(
                 else:
                     current_date += timedelta(days=1)
 
-    return combine_overlapping_intervals(free_time_intervals)
+    if len(free_time_intervals) > 0:
+        return combine_overlapping_intervals(free_time_intervals)
+
+    return free_time_intervals
 
 
 def find_available_time(
@@ -164,7 +167,6 @@ def find_available_time(
         consultant_id,
         consultant_free_definitions,
     ) in grouped_by_consultant_free.items():
-        print(f"Now evaluating available time for {consultant_id}")
         consultant_booked_intervals = grouped_by_consultant_booked[consultant_id]
 
         consultant_free_intervals = get_free_time_intervals(
@@ -174,8 +176,6 @@ def find_available_time(
             target_start_time=target_start_time,
             target_end_time=target_end_time,
         )
-
-        print(f"{consultant_free_intervals}")
 
         grouped_by_date_booked = group_by_value(consultant_booked_intervals, "date")
         grouped_by_date_free = group_by_value(consultant_free_intervals, "date")

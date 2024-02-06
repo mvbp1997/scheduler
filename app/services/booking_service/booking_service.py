@@ -38,9 +38,6 @@ class BookingService:
         if "date" in data:
             filter = {**filter, "date": data["date"]}
 
-        if "consultant_id" in data:
-            filter = {**filter, "consultant_id": data["consultant_id"]}
-
         if "start_time" and "end_time" in data:
             start_time = data["start_time"]
             end_time = data["end_time"]
@@ -50,6 +47,9 @@ class BookingService:
             }
 
         filter = {"$or": [filter, {"recurring_type": {"$exists": True}}]}
+
+        if "consultant_id" in data:
+            filter = {**filter, "consultant_id": data["consultant_id"]}
 
         # get consultant free time
         free_time = self.ft_db.read_all({**filter, **time_range_filter})
