@@ -1,6 +1,6 @@
 from flask import Blueprint, Response, json, request
 from app.services.mongo_service import MongoService
-from app.services.booking_service import BookingService
+from app.services.booking_service import BookingService, is_interval_available
 
 
 ft_db = MongoService(
@@ -94,22 +94,6 @@ def get_booking(consultant_id, id):
     )
 
 
-@booking_bp.route("/consultant/<consultant_id>/booking/<id>", methods=["PUT"])
-def update_booking(consultant_id, id):
-    data = request.json
-    if data is None or data == {}:
-        return Response(
-            response=json.dumps({"Error": "Please provide update body"}),
-            status=400,
-            mimetype="application/json",
-        )
-
-    response = booking_db.update({"id": id, "consultant_id": consultant_id}, data)
-    return Response(
-        response=json.dumps(response), status=200, mimetype="application/json"
-    )
-
-
 @booking_bp.route("/consultant/<consultant_id>/booking/<id>", methods=["DELETE"])
 def delete_booking(consultant_id, id):
     response = booking_db.delete({"id": id, "consultant_id": consultant_id})
@@ -118,7 +102,7 @@ def delete_booking(consultant_id, id):
     )
 
 
-@booking_bp.route("/consultant/<consultant_id>/booking/availability", methods=["GET"])
+@booking_bp.route("/consultant/<consultant_id>/availability", methods=["GET"])
 def get_availability_for_consultant(consultant_id):
     data = request.json
     if data is None or data == {}:
@@ -140,7 +124,7 @@ def get_availability_for_consultant(consultant_id):
     )
 
 
-@booking_bp.route("/booking/availability", methods=["GET"])
+@booking_bp.route("/availability", methods=["GET"])
 def get_all_availability():
     data = request.json
     if data is None or data == {}:
