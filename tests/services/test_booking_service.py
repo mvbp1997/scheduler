@@ -264,13 +264,13 @@ def test_get_free_time_intervals_for_time_interval():
     ]
 
 
-def test_is_interval_available():
+def test_is_booking_within_free_interval():
     free_intervals = get_free_time_intervals(
         MOCK_FREE_TIME_DEFINITIONS, target_month="02", target_date="02/26/2024"
     )
     booking_interval = {"start_time": "10:00", "end_time": "10:30"}
 
-    result = is_interval_available(
+    result = is_booking_within_free_interval(
         booking_interval=booking_interval, free_intervals=free_intervals
     )
 
@@ -306,5 +306,115 @@ def test_find_available_time():
             "start_time": "14:00",
             "end_time": "17:00",
             "date": "02/26/2024",
+        },
+    ]
+
+
+def get_invalid_bookings():
+    MOCK_BOOKED_INTERVALS = [
+        {  # false
+            "id": "meUuLKMCwM8-iUhSVbwvr",
+            "consultant_id": MOCK_CONSULTANT_ID,
+            "client_name": "TEST",
+            "date": "01/02/2024",
+            "email": "fake@email.com",
+            "end_time": "12:30",
+            "start_time": "11:00",
+        },
+        {  # false
+            "id": "meUuLKMCwM8-iUhSVbwvr",
+            "consultant_id": MOCK_CONSULTANT_ID,
+            "client_name": "TEST",
+            "date": "01/01/2024",
+            "email": "fake@email.com",
+            "end_time": "10:30",
+            "start_time": "10:00",
+        },
+        {  # true
+            "id": "meUuLKMCwM8-iUhSVbwvr",
+            "consultant_id": MOCK_CONSULTANT_ID,
+            "client_name": "TEST",
+            "date": "01/01/2024",
+            "email": "fake@email.com",
+            "end_time": "12:30",
+            "start_time": "11:00",
+        },
+        {  # true
+            "id": "meUuLKMCwM8-iUhSVbwvr",
+            "consultant_id": MOCK_CONSULTANT_ID,
+            "client_name": "TEST",
+            "date": "01/01/2024",
+            "email": "fake@email.com",
+            "end_time": "14:00",
+            "start_time": "13:00",
+        },
+        {  # true
+            "id": "meUuLKMCwM8-iUhSVbwvr",
+            "consultant_id": MOCK_CONSULTANT_ID,
+            "client_name": "TEST",
+            "date": "01/01/2024",
+            "email": "fake@email.com",
+            "end_time": "15:00",
+            "start_time": "12:30",
+        },
+        {  # false
+            "id": "meUuLKMCwM8-iUhSVbwvr",
+            "consultant_id": MOCK_CONSULTANT_ID,
+            "client_name": "TEST",
+            "date": "01/01/2024",
+            "email": "fake@email.com",
+            "end_time": "10:00",
+            "start_time": "09:30",
+        },
+    ]
+
+    MOCK_FREE_TIMES = [
+        {
+            "consultant_id": "LfZ6GkAENn-G9YaaQcea2",
+            "date": "02/02/2024",
+            "end_time": "12:00",
+            "id": "kGRn9rOP6vhg-ierb36O8",
+            "start_time": "09:00",
+        },
+        {
+            "consultant_id": "LfZ6GkAENn-G9YaaQcea2",
+            "date": "02/02/2024",
+            "end_time": "13:00",
+            "id": "6zLoWi9m6nlHm1VeDRsjC",
+            "start_time": "11:00",
+        },
+    ]
+
+    result = get_invalid_bookings(
+        free_times=MOCK_FREE_TIMES, current_bookings=MOCK_BOOKED_INTERVALS
+    )
+
+    assert result == [
+        {  # true
+            "id": "meUuLKMCwM8-iUhSVbwvr",
+            "consultant_id": MOCK_CONSULTANT_ID,
+            "client_name": "TEST",
+            "date": "01/01/2024",
+            "email": "fake@email.com",
+            "end_time": "12:30",
+            "start_time": "11:00",
+        },
+        {  # true
+            "id": "meUuLKMCwM8-iUhSVbwvr",
+            "consultant_id": MOCK_CONSULTANT_ID,
+            "client_name": "TEST",
+            "date": "01/01/2024",
+            "email": "fake@email.com",
+            "end_time": "14:00",
+            "start_time": "13:00",
+        },
+        {  # true
+            "id": "meUuLKMCwM8-iUhSVbwvr",
+            "consultant_id": MOCK_CONSULTANT_ID,
+            "client_name": "TEST",
+            "date": "01/01/2024",
+            "email": "fake@email.com",
+            "end_time": "15:00",
+            "start_time": "12:30",
         },
     ]

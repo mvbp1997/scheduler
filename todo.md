@@ -11,6 +11,8 @@ DONE - refactor "get free time" algorithm to account for dates as well
 DONE - create an API route that returns all available time slots for all consultants within a specified time range (i.e filter on start/end time)
 DONE - create an API route to enable consultants to specify recurring free time slots (recurring based on day of the week)
 DONE - account for overlapping free intervals
+DONE - add unit tests for booking service
+DONE - remove (or cancel) bookings after a consultant removes their free time slot
 
-- add unit tests for booking service
 - combine mongo docker image and python app image in docker compose
+- clean up postman collection

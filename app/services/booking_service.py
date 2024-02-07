@@ -1,12 +1,32 @@
 from datetime import datetime, timedelta
 from nanoid import generate
 from app.services.util import *
+from collections import defaultdict
 
 
 class BookingService:
     def __init__(self, ft_db, booking_db):
         self.ft_db = ft_db
         self.booking_db = booking_db
+
+    def cancel_bookings(self, cancelled_free_time):
+        consultant_id = cancelled_free_time["consultant_id"]
+
+        # get bookings for consultant
+        filter = {"consultant_id": consultant_id}
+        current_bookings = self.booking_db.read_all()
+
+        # get all "free_time" settings for consultant
+        free_times = self.ft_db.read_all(filter)
+
+        boookings_to_cancel = get_invalid_bookings(
+            free_times=free_times, current_bookings=current_bookings
+        )
+
+        for booking in boookings_to_cancel:
+            self.booking_db.delete(
+                {"id": booking["id"], "consultant_id": consultant_id}
+            )
 
     def reserve_time_slot(self, booking_request):
         date = booking_request["date"]
@@ -21,7 +41,7 @@ class BookingService:
 
         # check if requested interval is within free time interval
         booking_time = {"start_time": start_time, "end_time": end_time}
-        if not is_interval_available(booking_time, available_times):
+        if not is_booking_within_free_interval(booking_time, available_times):
             raise Exception("Requested time slot is not available to book.")
 
         # validate if booking is valid; add to db
@@ -51,10 +71,10 @@ class BookingService:
         if "consultant_id" in data:
             filter = {**filter, "consultant_id": data["consultant_id"]}
 
-        # get consultant free time
+        # get free_time
         free_time = self.ft_db.read_all({**filter, **time_range_filter})
 
-        # get consultant bookings
+        # get bookings
         current_bookings = self.booking_db.read_all(filter)
 
         available_times = find_available_times(
@@ -68,7 +88,9 @@ class BookingService:
         return available_times
 
 
-def is_interval_available(booking_interval, free_intervals):
+# Function that returns True if booking interval is completely contained within a free interval;
+# False otherwise
+def is_booking_within_free_interval(booking_interval, free_intervals):
     booking_start = datetime.strptime(booking_interval["start_time"], "%H:%M")
     booking_end = datetime.strptime(booking_interval["end_time"], "%H:%M")
 
@@ -77,9 +99,7 @@ def is_interval_available(booking_interval, free_intervals):
         free_end = datetime.strptime(free_interval["end_time"], "%H:%M")
 
         if free_start <= booking_start and free_end >= booking_end:
-            return (
-                True  # Booking interval is completely contained within a free interval
-            )
+            return True
 
     return False
 
@@ -107,6 +127,7 @@ def get_free_time_intervals(
         free_start_time = datetime.strptime(free_time_definition["start_time"], "%H:%M")
         free_end_time = datetime.strptime(free_time_definition["end_time"], "%H:%M")
 
+        # If the times do no intersect with the requested target start/end time, continue
         if (target_start_time is not None and target_end_time is not None) and not (
             target_start_time <= free_time_definition["end_time"]
             and free_time_definition["start_time"] <= target_end_time
@@ -277,6 +298,7 @@ def find_available_times(
     return result
 
 
+# Function that combines any overlapping intervals
 def combine_overlapping_intervals(intervals):
     # Convert time strings to datetime objects
     for interval in intervals:
@@ -315,3 +337,36 @@ def combine_overlapping_intervals(intervals):
         del interval["end_datetime"]
 
     return merged_intervals
+
+
+# Function that returns a list of invalid bookings based on current bookings and free_time settings
+def get_invalid_bookings(free_times, current_bookings):
+    cancel_bookings = []
+
+    date_free_time_intervals = {}
+
+    for booking in current_bookings:
+        booking_date = booking["date"]
+        booking_start = booking["start_time"]
+        booking_end = booking["end_time"]
+
+        # get free_time_intervals for booking date
+        if date_free_time_intervals.get(booking_date) is None:
+            free_time_interval = get_free_time_intervals(
+                free_times,
+                target_date=booking_date,
+            )
+            date_free_time_intervals[booking_date] = free_time_interval
+
+        date_free_time_interval = date_free_time_intervals[booking_date]
+
+        # compare if booking interval is contained within free_interval; if True, we must cancel it
+        result = not is_booking_within_free_interval(
+            booking_interval={"start_time": booking_start, "end_time": booking_end},
+            free_intervals=date_free_time_interval,
+        )
+
+        if result == True:
+            cancel_bookings.append(booking)
+
+    return cancel_bookings
