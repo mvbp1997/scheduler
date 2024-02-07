@@ -1,6 +1,6 @@
 from datetime import datetime, timedelta
 from nanoid import generate
-from app.services.booking_service.util import *
+from app.services.util import *
 
 
 class BookingService:

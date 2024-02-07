@@ -1,6 +1,6 @@
 from flask import Blueprint, Response, json, request
 from app.services.mongo_service import MongoService
-from app.services.booking_service.booking_service import BookingService
+from app.services.booking_service import BookingService
 
 
 ft_db = MongoService(
