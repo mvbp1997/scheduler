@@ -13,6 +13,8 @@ DONE - create an API route to enable consultants to specify recurring free time 
 DONE - account for overlapping free intervals
 DONE - add unit tests for booking service
 DONE - remove (or cancel) bookings after a consultant removes their free time slot
+DONE - combine mongo docker image and python app image in docker compose
+DONE - clean up postman collection
 
-- combine mongo docker image and python app image in docker compose
-- clean up postman collection
+- add schema validation on input to API requests
+- add data models using classes to enable strict type enforcement throughout app
