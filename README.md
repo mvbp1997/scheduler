@@ -10,6 +10,14 @@ To start the application, execute the following command
 docker-compose up
 ```
 
+# Test
+
+To execute the pytest:
+
+```
+pytest
+```
+
 # Resources
 
 ## Consultant
