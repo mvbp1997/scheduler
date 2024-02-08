@@ -114,8 +114,6 @@ def delete_free_time(consultant_id, id):
 
     response = ft_db.delete({"id": id, "consultant_id": consultant_id})
 
-    # # TODO: delete all bookings
-    print({"free_time_to_delete": free_time_to_delete})
     booking_service.cancel_bookings(cancelled_free_time=free_time_to_delete)
 
     return Response(

@@ -62,20 +62,20 @@ class BookingService:
             start_time = data["start_time"]
             end_time = data["end_time"]
             time_range_filter = {
-                "start_time": {"$lte": start_time},
-                "end_time": {"$gte": end_time},
+                "start_time": {"$gte": start_time},
+                "end_time": {"$lte": end_time},
             }
-
-        filter = {"$or": [filter, {"recurring_type": {"$exists": True}}]}
 
         if "consultant_id" in data:
             filter = {**filter, "consultant_id": data["consultant_id"]}
 
         # get free_time
-        free_time = self.ft_db.read_all({**filter, **time_range_filter})
+        free_time = self.ft_db.read_all(
+            {"$or": [filter, {"recurring_type": {"$exists": True}}]}
+        )
 
         # get bookings
-        current_bookings = self.booking_db.read_all(filter)
+        current_bookings = self.booking_db.read_all({**filter, **time_range_filter})
 
         available_times = find_available_times(
             free_time,
@@ -111,8 +111,6 @@ def get_free_time_intervals(
     free_time_definitions,
     target_month=None,
     target_date=None,
-    target_start_time=None,
-    target_end_time=None,
 ):
     free_time_intervals = []
     date_time = None
@@ -126,13 +124,6 @@ def get_free_time_intervals(
 
         free_start_time = datetime.strptime(free_time_definition["start_time"], "%H:%M")
         free_end_time = datetime.strptime(free_time_definition["end_time"], "%H:%M")
-
-        # If the times do no intersect with the requested target start/end time, continue
-        if (target_start_time is not None and target_end_time is not None) and not (
-            target_start_time <= free_time_definition["end_time"]
-            and free_time_definition["start_time"] <= target_end_time
-        ):
-            continue
 
         if (
             "date" in free_time_definition
@@ -249,9 +240,14 @@ def find_available_times(
             consultant_free_definitions,
             target_month=target_month,
             target_date=target_date,
-            target_start_time=target_start_time,
-            target_end_time=target_end_time,
         )
+
+        if target_start_time is not None and target_end_time is not None:
+            consultant_free_intervals = get_intervals_within_filter(
+                intervals=consultant_free_intervals,
+                target_start_time=target_start_time,
+                target_end_time=target_end_time,
+            )
 
         grouped_by_date_booked = group_by_value(consultant_booked_intervals, "date")
         grouped_by_date_free = group_by_value(consultant_free_intervals, "date")
@@ -370,3 +366,16 @@ def get_invalid_bookings(free_times, current_bookings):
             cancel_bookings.append(booking)
 
     return cancel_bookings
+
+
+def get_intervals_within_filter(intervals, target_start_time, target_end_time):
+    result = []
+
+    for interval in intervals:
+        if (
+            target_start_time <= interval["start_time"]
+            and target_end_time >= interval["end_time"]
+        ):
+            result.append(interval)
+
+    return result

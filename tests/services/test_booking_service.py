@@ -226,11 +226,28 @@ def test_get_free_time_intervals_for_date():
     ]
 
 
-# When the function is supplied a target start/end time,
-# it will return free time intervals within the supplied interval
-def test_get_free_time_intervals_for_time_interval():
-    result = get_free_time_intervals(
+def test_is_booking_within_free_interval():
+    free_intervals = get_free_time_intervals(
+        MOCK_FREE_TIME_DEFINITIONS, target_month="02", target_date="02/26/2024"
+    )
+    booking_interval = {"start_time": "10:00", "end_time": "10:30"}
+
+    result = is_booking_within_free_interval(
+        booking_interval=booking_interval, free_intervals=free_intervals
+    )
+
+    assert result == True
+
+
+def test_find_available_time_for_interval():
+    free_intervals = get_free_time_intervals(
         MOCK_FREE_TIME_DEFINITIONS,
+        target_month="02",
+    )
+
+    result = find_available_times(
+        free_intervals=free_intervals,
+        booked_intervals=MOCK_BOOKED_INTERVALS,
         target_month="02",
         target_start_time="12:00",
         target_end_time="18:00",
@@ -262,19 +279,6 @@ def test_get_free_time_intervals_for_time_interval():
             "date": "02/26/2024",
         },
     ]
-
-
-def test_is_booking_within_free_interval():
-    free_intervals = get_free_time_intervals(
-        MOCK_FREE_TIME_DEFINITIONS, target_month="02", target_date="02/26/2024"
-    )
-    booking_interval = {"start_time": "10:00", "end_time": "10:30"}
-
-    result = is_booking_within_free_interval(
-        booking_interval=booking_interval, free_intervals=free_intervals
-    )
-
-    assert result == True
 
 
 def test_find_available_time():
