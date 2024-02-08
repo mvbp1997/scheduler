@@ -1,0 +1,749 @@
+{
+	"info": {
+		"_postman_id": "364d99e2-1182-4a72-8f2d-c1b5f5d67528",
+		"name": "Scheduler",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "4487887"
+	},
+	"item": [
+		{
+			"name": "Consultant",
+			"item": [
+				{
+					"name": "Get All Consultants",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{API_ENDPOINT}}/consultant",
+							"host": [
+								"{{API_ENDPOINT}}"
+							],
+							"path": [
+								"consultant"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Add Consultant",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var jsonResponse = pm.response.json();",
+									"",
+									"var id = jsonResponse.id;",
+									"",
+									"pm.environment.set(\"CONSULTANT_ID\", id);",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"name\": \"Matt\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{API_ENDPOINT}}/consultant",
+							"host": [
+								"{{API_ENDPOINT}}"
+							],
+							"path": [
+								"consultant"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update Consultant",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"name\": \"Georgie\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{API_ENDPOINT}}/consultant/{{CONSULTANT_ID}}",
+							"host": [
+								"{{API_ENDPOINT}}"
+							],
+							"path": [
+								"consultant",
+								"{{CONSULTANT_ID}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Consultant by ID",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{API_ENDPOINT}}/consultant/{{CONSULTANT_ID}}",
+							"host": [
+								"{{API_ENDPOINT}}"
+							],
+							"path": [
+								"consultant",
+								"{{CONSULTANT_ID}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete Consultant",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"name\": \"Person\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{API_ENDPOINT}}/consultant/{{CONSULTANT_ID}}",
+							"host": [
+								"{{API_ENDPOINT}}"
+							],
+							"path": [
+								"consultant",
+								"{{CONSULTANT_ID}}"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Free Time",
+			"item": [
+				{
+					"name": "Get All Free Time",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    // \"date\": \"01/02/2024\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{API_ENDPOINT}}/free-time",
+							"host": [
+								"{{API_ENDPOINT}}"
+							],
+							"path": [
+								"free-time"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get All Free Time for Consultant",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"date\": \"02/02/2024\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{API_ENDPOINT}}/consultant/{{CONSULTANT_ID}}/free-time",
+							"host": [
+								"{{API_ENDPOINT}}"
+							],
+							"path": [
+								"consultant",
+								"{{CONSULTANT_ID}}",
+								"free-time"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Add Free Time (Recurring Weekly)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var jsonResponse = pm.response.json();",
+									"",
+									"var id = jsonResponse.id;",
+									"",
+									"pm.environment.set(\"FREE_TIME_ID\", id);",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"start_time\": \"15:00\",\n    \"end_time\": \"17:00\",\n    \"recurring_type\": \"weekly\",\n    \"interval\": 1,\n    \"day_of_week\": 4 // 0 = Monday, 6 = Sunday\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{API_ENDPOINT}}/consultant/{{CONSULTANT_ID}}/free-time",
+							"host": [
+								"{{API_ENDPOINT}}"
+							],
+							"path": [
+								"consultant",
+								"{{CONSULTANT_ID}}",
+								"free-time"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Add Free Time (Recurring Daily)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var jsonResponse = pm.response.json();",
+									"",
+									"var id = jsonResponse.id;",
+									"",
+									"pm.environment.set(\"FREE_TIME_ID\", id);",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"date\": \"02/25/2024\", // every day starting from this date\n    \"start_time\": \"15:00\",\n    \"end_time\": \"17:00\",\n    \"recurring_type\": \"daily\",\n    \"interval\": 1\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{API_ENDPOINT}}/consultant/{{CONSULTANT_ID}}/free-time",
+							"host": [
+								"{{API_ENDPOINT}}"
+							],
+							"path": [
+								"consultant",
+								"{{CONSULTANT_ID}}",
+								"free-time"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Add Free Time",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var jsonResponse = pm.response.json();",
+									"",
+									"var id = jsonResponse.id;",
+									"",
+									"pm.environment.set(\"FREE_TIME_ID\", id);",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"start_time\": \"05:00\",\n    \"end_time\": \"06:00\",\n    \"date\": \"02/02/2024\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{API_ENDPOINT}}/consultant/{{CONSULTANT_ID}}/free-time",
+							"host": [
+								"{{API_ENDPOINT}}"
+							],
+							"path": [
+								"consultant",
+								"{{CONSULTANT_ID}}",
+								"free-time"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update Free Time",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"date\": \"01/02/2024\",\n    \"end_time\": \"14:00\",\n    \"start_time\": \"12:00\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{API_ENDPOINT}}/consultant/{{CONSULTANT_ID}}/free-time/imceoTHucdcgCCJzH2Wi8",
+							"host": [
+								"{{API_ENDPOINT}}"
+							],
+							"path": [
+								"consultant",
+								"{{CONSULTANT_ID}}",
+								"free-time",
+								"imceoTHucdcgCCJzH2Wi8"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Free Time by Id",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{API_ENDPOINT}}/consultant/{{CONSULTANT_ID}}/free-time/{{FREE_TIME_ID}}",
+							"host": [
+								"{{API_ENDPOINT}}"
+							],
+							"path": [
+								"consultant",
+								"{{CONSULTANT_ID}}",
+								"free-time",
+								"{{FREE_TIME_ID}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete Free Time",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"name\": \"Person\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{API_ENDPOINT}}/consultant/{{CONSULTANT_ID}}/free-time/{{FREE_TIME_ID}}",
+							"host": [
+								"{{API_ENDPOINT}}"
+							],
+							"path": [
+								"consultant",
+								"{{CONSULTANT_ID}}",
+								"free-time",
+								"{{FREE_TIME_ID}}"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Bookings",
+			"item": [
+				{
+					"name": "Add Booking",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var jsonResponse = pm.response.json();",
+									"",
+									"var id = jsonResponse.id;",
+									"",
+									"pm.environment.set(\"BOOKING_ID\", id);",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"client_name\": \"Matt\",\n    \"email\": \"fake@email.com\",\n    \"start_time\": \"02:30\",\n    \"end_time\": \"03:30\",\n    \"date\": \"02/02/2024\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{API_ENDPOINT}}/consultant/{{CONSULTANT_ID}}/booking",
+							"host": [
+								"{{API_ENDPOINT}}"
+							],
+							"path": [
+								"consultant",
+								"{{CONSULTANT_ID}}",
+								"booking"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get All Bookings",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    // \"date\": \"02/02/2024\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{API_ENDPOINT}}/booking",
+							"host": [
+								"{{API_ENDPOINT}}"
+							],
+							"path": [
+								"booking"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Booking by Id",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{API_ENDPOINT}}/consultant/{{CONSULTANT_ID}}/booking/{{BOOKING_ID}}",
+							"host": [
+								"{{API_ENDPOINT}}"
+							],
+							"path": [
+								"consultant",
+								"{{CONSULTANT_ID}}",
+								"booking",
+								"{{BOOKING_ID}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get All Bookings for Consultant",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"date\": \"02/02/2024\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{API_ENDPOINT}}/consultant/{{CONSULTANT_ID}}/booking",
+							"host": [
+								"{{API_ENDPOINT}}"
+							],
+							"path": [
+								"consultant",
+								"{{CONSULTANT_ID}}",
+								"booking"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete Booking",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"name\": \"Person\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{API_ENDPOINT}}/consultant/{{CONSULTANT_ID}}/booking/{{BOOKING_ID}}",
+							"host": [
+								"{{API_ENDPOINT}}"
+							],
+							"path": [
+								"consultant",
+								"{{CONSULTANT_ID}}",
+								"booking",
+								"{{BOOKING_ID}}"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Availability",
+			"item": [
+				{
+					"name": "Get Availability for Consultant",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"date\": \"02/02/2024\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{API_ENDPOINT}}/consultant/{{CONSULTANT_ID}}/availability",
+							"host": [
+								"{{API_ENDPOINT}}"
+							],
+							"path": [
+								"consultant",
+								"{{CONSULTANT_ID}}",
+								"availability"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Availability (date)",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"date\": \"02/02/2024\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{API_ENDPOINT}}/availability",
+							"host": [
+								"{{API_ENDPOINT}}"
+							],
+							"path": [
+								"availability"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Availability (month)",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"month\": \"02\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{API_ENDPOINT}}/availability",
+							"host": [
+								"{{API_ENDPOINT}}"
+							],
+							"path": [
+								"availability"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Availability (range)",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"start_time\": \"01:00\",\n    \"end_time\": \"08:00\",\n    \"date\": \"02/02/2024\"\n    // \"month\": \"01\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{API_ENDPOINT}}/availability",
+							"host": [
+								"{{API_ENDPOINT}}"
+							],
+							"path": [
+								"availability"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Health Check",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{API_ENDPOINT}}",
+					"host": [
+						"{{API_ENDPOINT}}"
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}
