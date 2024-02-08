@@ -5,7 +5,7 @@ from nanoid import generate
 
 class MongoService:
     def __init__(self, data):
-        self.client = MongoClient("mongodb://localhost:5000/")
+        self.client = MongoClient("mongodb://mongo:27017/")
         self.data = data
 
         database = data["database"]
